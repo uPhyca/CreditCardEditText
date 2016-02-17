@@ -1,0 +1,41 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.novoda:bintray-release:0.3.4'
+    }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+
+    defaultConfig {
+        minSdkVersion 7
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+}
+
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:23.1.1'
+}
+
+//./gradlew clean build bintrayUpload -PbintrayUser=BINTRAY_USERNAME -PbintrayKey=BINTRAY_KEY -PdryRun=false
+publish {
+    userOrg = 'uphyca'
+    groupId = 'com.uphyca'
+    artifactId = 'creditcardnumberedittext'
+    version = '1.0'
+    description = 'Implementation of EditText for Credit Card Number.'
+    website = 'https://github.com/uPhyca/CreditCardNumberEditText '
+    issueTracker = "https://github.com/uPhyca/CreditCardNumberEditText /issues"
+    repository = "https://github.com/uPhyca/CreditCardNumberEditText .git"
+}
