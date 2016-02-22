@@ -61,12 +61,12 @@ public class CreditCardNumberEditText extends AppCompatEditText {
             final String cardNumber = removeSeparator(s.toString());
             final int length = s.length();
 
-            final String lastCarNumber = removeSeparator(lastText);
+            final String lastCardNumber = removeSeparator(lastText);
             final int lastLength = lastText.length();
 
             StringBuilder sb = new StringBuilder(s);
 
-            if (cardNumber.equals(lastCarNumber) && length < lastLength) {
+            if (cardNumber.equals(lastCardNumber) && length < lastLength) {
                 // separator が消されたので一つ前の数字も消す
                 final int separatorPosition = lastText.indexOf(SEPARATOR);
                 if (separatorPosition > 0 && s.charAt(separatorPosition) != SEPARATOR) {
