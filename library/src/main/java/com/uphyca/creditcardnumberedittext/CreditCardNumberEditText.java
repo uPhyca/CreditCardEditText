@@ -58,10 +58,10 @@ public class CreditCardNumberEditText extends AppCompatEditText {
         @Override
         public void afterTextChanged(Editable s) {
 
-            final String beforeCardNumber = removeSeparator(beforeText);
+            final String beforeCardNumber = removeSeparators(beforeText);
             final int beforeRawLength = beforeText.length();
 
-            final String afterCardNumber = removeSeparator(s.toString());
+            final String afterCardNumber = removeSeparators(s.toString());
             final int afterRawLength = s.length();
             final StringBuilder afterRawText = new StringBuilder(s);
 
@@ -76,7 +76,7 @@ public class CreditCardNumberEditText extends AppCompatEditText {
 
             final CreditCardBrand brand = CreditCardBrand.getBrand(afterCardNumber);
             // この後にseparatorを一括で挿入するので、すでに挿入済みのseparatorを削除しておく
-            removeSeparator(afterRawText);
+            removeSeparators(afterRawText);
             insertSeparator(afterRawText, brand);
 
             if (!hasSameSequence(s, afterRawText)) {
@@ -99,7 +99,7 @@ public class CreditCardNumberEditText extends AppCompatEditText {
 
             //destにsourceをマージした文字列
             String tempRawText = new StringBuilder(dest).replace(dstart, dend, source.subSequence(start, end).toString()).toString();
-            String tempCardNumber = removeSeparator(tempRawText);
+            String tempCardNumber = removeSeparators(tempRawText);
             CreditCardBrand tempBrand = CreditCardBrand.getBrand(tempCardNumber);
             int maxLength = tempBrand.getMaxLength() + tempBrand.getSeparatorCount();
 
@@ -162,7 +162,7 @@ public class CreditCardNumberEditText extends AppCompatEditText {
      * @return 入力されたカード番号
      */
     public String getNumber() {
-        return removeSeparator(getText().toString());
+        return removeSeparators(getText().toString());
     }
 
     /**
@@ -171,7 +171,7 @@ public class CreditCardNumberEditText extends AppCompatEditText {
      * @param s 文字列
      * @return セパレーター除去後の文字列
      */
-    private static String removeSeparator(String s) {
+    private static String removeSeparators(String s) {
         return s.replace(String.valueOf(SEPARATOR), EMPTY);
     }
 
@@ -180,7 +180,7 @@ public class CreditCardNumberEditText extends AppCompatEditText {
      *
      * @param sb 文字列
      */
-    private static void removeSeparator(StringBuilder sb) {
+    private static void removeSeparators(StringBuilder sb) {
         for (int i = sb.length() - 1; i >= 0; i--) {
             if (sb.charAt(i) == SEPARATOR) {
                 sb.deleteCharAt(i);
