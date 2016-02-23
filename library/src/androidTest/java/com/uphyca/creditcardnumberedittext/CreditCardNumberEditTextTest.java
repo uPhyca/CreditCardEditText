@@ -130,6 +130,41 @@ public class CreditCardNumberEditTextTest {
     }
 
     /**
+     * 最大文字数までしか入力できないこと
+     */
+    @Test
+    public void maxLength() throws Exception {
+        underTest.setText("4242424242424242");
+        underTest.append("4");
+        assertThat(underTest).hasTextString("4242 4242 4242 4242");
+        assertThat(underTest).hasNumber("4242424242424242");
+    }
+
+    /**
+     * 最大文字数を超える場合、切り捨てる
+     */
+    @Test
+    public void overflow() throws Exception {
+        underTest.setText("42424242424242429");
+        assertThat(underTest).hasTextString("4242 4242 4242 4242");
+        assertThat(underTest).hasNumber("4242424242424242");
+    }
+
+    /**
+     * 追加後、最大文字数を超える場合、切り捨てる
+     */
+    @Test
+    public void appendOverflow() throws Exception {
+        underTest.setText("424242424242424");
+        assertThat(underTest).hasTextString("4242 4242 4242 424");
+        assertThat(underTest).hasNumber("424242424242424");
+
+        underTest.append("29");
+        assertThat(underTest).hasTextString("4242 4242 4242 4242");
+        assertThat(underTest).hasNumber("4242424242424242");
+    }
+    
+    /**
      * 末尾の文字を指定の文字数だけ削除する
      *
      * @param editText 文字を削除する対象

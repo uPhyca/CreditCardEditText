@@ -42,7 +42,6 @@ public class CreditCardNumberEditText extends AppCompatEditText {
         addTextChangedListener(textWatcher);
     }
 
-    // TODO: 要修正
     private final TextWatcher textWatcher = new TextWatcher() {
 
         private String beforeText;
@@ -86,7 +85,6 @@ public class CreditCardNumberEditText extends AppCompatEditText {
         }
     };
 
-    // TODO: 要修正
     private static class CreditCardNumberKeyListener extends NumberKeyListener {
         private final char[] accepted = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', SEPARATOR};
 
@@ -99,9 +97,11 @@ public class CreditCardNumberEditText extends AppCompatEditText {
         public CharSequence filter(CharSequence source, int start, int end,
                                    Spanned dest, int dstart, int dend) {
 
-            String cardNumber = removeSeparator(dest.toString());
-            CreditCardBrand brand = CreditCardBrand.getBrand(cardNumber);
-            int maxLength = brand.getMaxLength() + brand.getSeparatorCount();
+            //destにsourceをマージした文字列
+            String tempRawText = new StringBuilder(dest).replace(dstart, dend, source.subSequence(start, end).toString()).toString();
+            String tempCardNumber = removeSeparator(tempRawText);
+            CreditCardBrand tempBrand = CreditCardBrand.getBrand(tempCardNumber);
+            int maxLength = tempBrand.getMaxLength() + tempBrand.getSeparatorCount();
 
             // 入力文字数をチェック
             CharSequence lengthOut = lengthFilter(maxLength, source, start, end, dest, dstart, dend);
@@ -118,26 +118,7 @@ public class CreditCardNumberEditText extends AppCompatEditText {
 
             // 入力文字（数字かどうか）をチェック
             CharSequence out = super.filter(source, start, end, dest, dstart, dend);
-            if (out != null) {
-                source = out;
-                start = 0;
-                end = out.length();
-            }
-
-            // カード番号情報が定まらない場合、書式化不能なので処理を打ち切る
-            if (brand == CreditCardBrand.UNKNOWN) {
-                return out;
-            }
-
-            if (brand.isSeparatorPosition(dstart) && source.length() > start && source.charAt(start) == SEPARATOR) {
-                if (dest.length() > dstart && dest.charAt(dstart) == SEPARATOR) {
-                    return EMPTY;
-                } else {
-                    return String.valueOf(SEPARATOR);
-                }
-            }
-
-            return out;
+            return out == null ? lengthOut : out;
         }
 
         // Taken from android.text.InputFilter.LengthFilter
