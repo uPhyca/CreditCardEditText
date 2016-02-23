@@ -6,6 +6,7 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.NumberKeyListener;
 import android.util.AttributeSet;
@@ -17,8 +18,8 @@ import android.util.AttributeSet;
  */
 public class CreditCardNumberEditText extends AppCompatEditText {
 
-    private static final String SEPARATOR = " ";
-    private static final char HYPHEN = ' ';
+    private static final char SEPARATOR = ' ';
+    private static final String EMPTY = "";
 
     public CreditCardNumberEditText(Context context) {
         super(context);
@@ -42,14 +43,13 @@ public class CreditCardNumberEditText extends AppCompatEditText {
         addTextChangedListener(textWatcher);
     }
 
-    // TODO: 要修正
     private final TextWatcher textWatcher = new TextWatcher() {
 
-        private String lastText;
+        private String beforeText;
 
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            lastText = s.toString();
+            beforeText = s.toString();
         }
 
         @Override
@@ -58,53 +58,36 @@ public class CreditCardNumberEditText extends AppCompatEditText {
 
         @Override
         public void afterTextChanged(Editable s) {
-            final String cardNumber = s.toString().replace(SEPARATOR, "");
-            final int length = s.length();
 
-            final String lastCarNumber = lastText.replace(SEPARATOR, "");
-            final int lastLength = lastText.length();
+            final String beforeCardNumber = removeSeparators(beforeText);
+            final int beforeRawLength = beforeText.length();
 
-            StringBuilder sb = new StringBuilder(s);
+            final String afterCardNumber = removeSeparators(s.toString());
+            final int afterRawLength = s.length();
+            final StringBuilder afterRawText = new StringBuilder(s);
 
-            if (cardNumber.equals(lastCarNumber) && length < lastLength) {
-                // separator が消されたので一つ前の数字も消す
-                final int separatorPosition = lastText.indexOf(HYPHEN);
-                if (separatorPosition > 0 && s.charAt(separatorPosition) != HYPHEN) {
-                    sb.deleteCharAt(separatorPosition - 1);
+            boolean trimmed = afterRawLength < beforeRawLength;
+            if (TextUtils.equals(beforeCardNumber, afterCardNumber) && trimmed) {
+                final int separatorPosition = beforeText.indexOf(SEPARATOR);
+                if (separatorPosition > 0 && beforeText.charAt(separatorPosition) != SEPARATOR) {
+                    // separator が消されたので一つ前の数字も消す
+                    afterRawText.deleteCharAt(separatorPosition - 1);
                 }
             }
 
-            // 一度 separator を削除
-            for (int i = sb.length() - 1; i >= 0; i--) {
-                if (sb.charAt(i) == HYPHEN) {
-                    sb.deleteCharAt(i);
-                }
-            }
+            final CreditCardBrand brand = CreditCardBrand.getBrand(afterCardNumber);
+            // この後にseparatorを一括で挿入するので、すでに挿入済みのseparatorを削除しておく
+            removeSeparators(afterRawText);
+            insertSeparator(afterRawText, brand);
 
-            CreditCardBrand brand = CreditCardBrand.getBrand(cardNumber);
-            final int[] format = brand.getFormat();
-
-            // separator を追加
-            int i = 0;
-            for (int number : format) {
-                i += number;
-                if (sb.length() > i) {
-                    sb.insert(i, HYPHEN);
-                } else {
-                    break;
-                }
-                i++;
-            }
-
-            if (!sb.toString().equals(s.toString())) {
-                s.replace(0, length, sb.toString());
+            if (!TextUtils.equals(s, afterRawText)) {
+                s.replace(0, afterRawLength, afterRawText.toString());
             }
         }
     };
 
-    // TODO: 要修正
-    private class CreditCardNumberKeyListener extends NumberKeyListener {
-        private final char[] accepted = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', HYPHEN};
+    private static class CreditCardNumberKeyListener extends NumberKeyListener {
+        private final char[] accepted = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', SEPARATOR};
 
         @Override
         protected char[] getAcceptedChars() {
@@ -115,15 +98,17 @@ public class CreditCardNumberEditText extends AppCompatEditText {
         public CharSequence filter(CharSequence source, int start, int end,
                                    Spanned dest, int dstart, int dend) {
 
-            String cardNumber = dest.toString().replace(SEPARATOR, "");
-            CreditCardBrand brand = CreditCardBrand.getBrand(cardNumber);
-            int maxLength = brand.getMaxLength() + brand.getSeparatorCount();
+            //destにsourceをマージした文字列
+            String tempRawText = new StringBuilder(dest).replace(dstart, dend, source.subSequence(start, end).toString()).toString();
+            String tempCardNumber = removeSeparators(tempRawText);
+            CreditCardBrand tempBrand = CreditCardBrand.getBrand(tempCardNumber);
+            int maxLength = tempBrand.getMaxLength() + tempBrand.getSeparatorCount();
 
             // 入力文字数をチェック
             CharSequence lengthOut = lengthFilter(maxLength, source, start, end, dest, dstart, dend);
-            if (lengthOut != null && lengthOut.equals("")) {
+            if (TextUtils.equals(lengthOut, EMPTY)) {
                 // length over
-                return "";
+                return EMPTY;
             }
 
             if (lengthOut != null) {
@@ -134,33 +119,15 @@ public class CreditCardNumberEditText extends AppCompatEditText {
 
             // 入力文字（数字かどうか）をチェック
             CharSequence out = super.filter(source, start, end, dest, dstart, dend);
-            if (out != null) {
-                source = out;
-                start = 0;
-                end = out.length();
-            }
-
-            final int[] format = brand.getFormat();
-            if (format.length == 0) {
-                return out;
-            }
-
-            if (brand.isSeparatorPosition(dstart) && source.length() > start && source.charAt(start) == HYPHEN) {
-                if (dest.length() > dstart && dest.charAt(dstart) == HYPHEN) {
-                    return "";
-                } else {
-                    return String.valueOf(HYPHEN);
-                }
-            }
-
-            return out;
+            return out == null ? lengthOut : out;
         }
 
-        public CharSequence lengthFilter(int maxLength, CharSequence source, int start, int end,
-                                         Spanned dest, int dstart, int dend) {
+        // Taken from android.text.InputFilter.LengthFilter
+        private static CharSequence lengthFilter(int maxLength, CharSequence source, int start, int end,
+                                                 Spanned dest, int dstart, int dend) {
             int keep = maxLength - (dest.length() - (dend - dstart));
             if (keep <= 0) {
-                return "";
+                return EMPTY;
             } else if (keep >= end - start) {
                 return null; // keep original
             } else {
@@ -168,7 +135,7 @@ public class CreditCardNumberEditText extends AppCompatEditText {
                 if (Character.isHighSurrogate(source.charAt(keep - 1))) {
                     --keep;
                     if (keep == start) {
-                        return "";
+                        return EMPTY;
                     }
                 }
                 return source.subSequence(start, keep);
@@ -196,7 +163,49 @@ public class CreditCardNumberEditText extends AppCompatEditText {
      * @return 入力されたカード番号
      */
     public String getNumber() {
-        return getText().toString().replace(SEPARATOR, "");
+        return removeSeparators(getText().toString());
     }
 
+    /**
+     * 文字列から全てのセパレーターを除去する
+     *
+     * @param s 文字列
+     * @return セパレーター除去後の文字列
+     */
+    private static String removeSeparators(String s) {
+        return s.replace(String.valueOf(SEPARATOR), EMPTY);
+    }
+
+    /**
+     * 文字列から全てのセパレーターを除去する
+     *
+     * @param sb 文字列
+     */
+    private static void removeSeparators(StringBuilder sb) {
+        for (int i = sb.length() - 1; i >= 0; i--) {
+            if (sb.charAt(i) == SEPARATOR) {
+                sb.deleteCharAt(i);
+            }
+        }
+    }
+
+    /**
+     * カード番号情報に対応する書式に従ってセパレーターを挿入する
+     *
+     * @param sb    カード番号
+     * @param brand カード番号情報
+     */
+    private void insertSeparator(StringBuilder sb, CreditCardBrand brand) {
+        final int[] format = brand.getFormat();
+        int i = 0;
+        for (int number : format) {
+            i += number;
+            if (sb.length() > i) {
+                sb.insert(i, SEPARATOR);
+            } else {
+                break;
+            }
+            i++;
+        }
+    }
 }
