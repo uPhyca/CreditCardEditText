@@ -163,7 +163,7 @@ public class CreditCardNumberEditTextTest {
         assertThat(underTest).hasTextString("4242 4242 4242 4242");
         assertThat(underTest).hasNumber("4242424242424242");
     }
-    
+
     /**
      * 末尾の文字を指定の文字数だけ削除する
      *
@@ -172,6 +172,7 @@ public class CreditCardNumberEditTextTest {
      */
     private static void trim(EditText editText, int count) {
         Editable editableText = editText.getEditableText();
-        editableText.delete(editableText.length() - count, editableText.length());
+        int length = editableText.length();
+        editableText.delete(length - count, length);
     }
 }
