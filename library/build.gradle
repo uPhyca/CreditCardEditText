@@ -20,12 +20,29 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 }
 
+configurations.all {
+    resolutionStrategy {
+        force 'com.android.support:support-annotations:23.1.1'
+    }
+}
 
 dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'
+
+    androidTestCompile 'com.android.support:support-annotations:23.1.1'
+    androidTestCompile 'com.android.support.test:runner:0.4.1'
+
+    // @aarを指定せずとも問題無いはずだが、なぜかエラーが出るので @aar をつけて回避しておく。
+    // Error:Module 'com.squareup.assertj:assertj-android-appcompat-v7:1.1.1' depends on one or more Android Libraries but is a jar
+    // 関連しそうなAssertj-androidのissue  https://github.com/square/assertj-android/issues/180
+    androidTestCompile 'com.squareup.assertj:assertj-android:1.1.1@aar'
+    // @aarを明示するとdependenciesが解決されないので明示する
+    androidTestCompile 'org.assertj:assertj-core:1.7.1'
 }
 
 //./gradlew clean build bintrayUpload -PbintrayUser=BINTRAY_USERNAME -PbintrayKey=BINTRAY_KEY -PdryRun=false
