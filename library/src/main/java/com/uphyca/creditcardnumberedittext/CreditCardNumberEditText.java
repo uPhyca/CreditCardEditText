@@ -6,6 +6,7 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.NumberKeyListener;
 import android.util.AttributeSet;
@@ -66,7 +67,7 @@ public class CreditCardNumberEditText extends AppCompatEditText {
             final StringBuilder afterRawText = new StringBuilder(s);
 
             boolean trimmed = afterRawLength < beforeRawLength;
-            if (hasSameSequence(beforeCardNumber, afterCardNumber) && trimmed) {
+            if (TextUtils.equals(beforeCardNumber, afterCardNumber) && trimmed) {
                 final int separatorPosition = beforeText.indexOf(SEPARATOR);
                 if (separatorPosition > 0 && beforeText.charAt(separatorPosition) != SEPARATOR) {
                     // separator が消されたので一つ前の数字も消す
@@ -79,7 +80,7 @@ public class CreditCardNumberEditText extends AppCompatEditText {
             removeSeparators(afterRawText);
             insertSeparator(afterRawText, brand);
 
-            if (!hasSameSequence(s, afterRawText)) {
+            if (!TextUtils.equals(s, afterRawText)) {
                 s.replace(0, afterRawLength, afterRawText.toString());
             }
         }
@@ -105,7 +106,7 @@ public class CreditCardNumberEditText extends AppCompatEditText {
 
             // 入力文字数をチェック
             CharSequence lengthOut = lengthFilter(maxLength, source, start, end, dest, dstart, dend);
-            if (hasSameSequence(lengthOut, EMPTY)) {
+            if (TextUtils.equals(lengthOut, EMPTY)) {
                 // length over
                 return EMPTY;
             }
@@ -186,23 +187,6 @@ public class CreditCardNumberEditText extends AppCompatEditText {
                 sb.deleteCharAt(i);
             }
         }
-    }
-
-    /**
-     * ２つの文字シーケンスが同じ等価な場合に真を返す
-     *
-     * @param a 文字シーケンス
-     * @param b 文字シーケンス
-     * @return 等価な場合true、そうでない場合false
-     */
-    private static boolean hasSameSequence(CharSequence a, CharSequence b) {
-        if (a == null) {
-            return b == null;
-        }
-        if (b != null) {
-            return a.toString().equals(b.toString());
-        }
-        return false;
     }
 
     /**
