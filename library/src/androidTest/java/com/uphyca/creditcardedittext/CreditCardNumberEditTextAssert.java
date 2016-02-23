@@ -1,8 +1,7 @@
-package com.uphyca.creditcardnumberedittext;
+package com.uphyca.creditcardedittext;
 
 import org.assertj.android.api.widget.AbstractTextViewAssert;
 import org.assertj.core.api.Assertions;
-
 
 /**
  * Assertions for {@link CreditCardNumberEditText} instances.

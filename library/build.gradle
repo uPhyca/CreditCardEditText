@@ -49,7 +49,7 @@ dependencies {
 publish {
     userOrg = 'uphyca'
     groupId = 'com.uphyca'
-    artifactId = 'creditcardnumberedittext'
+    artifactId = 'creditcardedittext'
     version = '1.0'
     description = 'Implementation of EditText for Credit Card Number.'
     website = 'https://github.com/uPhyca/CreditCardNumberEditText '
