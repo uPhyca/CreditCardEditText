@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:tools="http://schemas.android.com/tools"
-    package="com.uphyca.creditcardnumberedittext.test">
+    package="com.uphyca.creditcardedittext.test">
 
     <!--
         テストライブラリのいくつかがAPI Level 7より高いAPIを要求するが、ライブラリ自体はminSdkVersion=7にしたいので、テストライブラリのminSdkVersionを無視する

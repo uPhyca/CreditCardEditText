@@ -1,4 +1,4 @@
-package com.uphyca.creditcardnumberedittext;
+package com.uphyca.creditcardedittext;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static com.uphyca.creditcardnumberedittext.Assertions.assertThat;
+import static com.uphyca.creditcardedittext.Assertions.assertThat;
 
 /**
  * Test for {@link CreditCardNumberEditText}.

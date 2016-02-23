@@ -1,4 +1,4 @@
-package com.uphyca.creditcardnumberedittext;
+package com.uphyca.creditcardedittext;
 
 public class Assertions {
 
