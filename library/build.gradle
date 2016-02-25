@@ -51,8 +51,8 @@ publish {
     groupId = 'com.uphyca'
     artifactId = 'creditcardedittext'
     version = '1.0'
-    description = 'Implementation of EditText for Credit Card Number.'
-    website = 'https://github.com/uPhyca/CreditCardNumberEditText '
-    issueTracker = "https://github.com/uPhyca/CreditCardNumberEditText /issues"
-    repository = "https://github.com/uPhyca/CreditCardNumberEditText .git"
+    description = 'Implementation of EditText for Credit Card.'
+    website = 'https://github.com/uPhyca/CreditCardEditText'
+    issueTracker = 'https://github.com/uPhyca/CreditCardEditText/issues'
+    repository = 'https://github.com/uPhyca/CreditCardEditText.git'
 }
