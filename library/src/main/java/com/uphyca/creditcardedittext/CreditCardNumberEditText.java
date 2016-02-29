@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.NumberKeyListener;
 import android.util.AttributeSet;
+import android.util.Log;
 
 /**
  * クレジットカード番号入力用の EditText
@@ -45,19 +46,127 @@ public class CreditCardNumberEditText extends AppCompatEditText {
 
     private final TextWatcher textWatcher = new TextWatcher() {
 
+        // カーソル位置について
+        //
+        // セパレーターを挿入したぶん、カーソル位置を調整しなければならない。
+        // 以下にプログラムでカーソル位置を調整しない場合の挙動を参考として記す。
+        //
+        //    未入力状態から“424211102222”をペーストしたとき
+        //    Precondition: <>
+        //    Actual: 4242 1110 2222<>
+        //    Expected: 4242 1110 2222<>
+        //    Log:
+        //    D/CreditCardNumber: beforeTextChanged(,0,0,12)
+        //    D/CreditCardNumber: selectionStart=0, selectionEnd=0
+        //    D/CreditCardNumber: onTextChanged(424211102222,0,0,12)
+        //    D/CreditCardNumber: selectionStart=12, selectionEnd=12
+        //    D/CreditCardNumber: afterTextChanged(424211102222)
+        //    D/CreditCardNumber: selectionStart=12, selectionEnd=12
+        //    D/CreditCardNumber: beforeTextChanged(424211102222,0,12,14)
+        //    D/CreditCardNumber: selectionStart=12, selectionEnd=12
+        //    D/CreditCardNumber: onTextChanged(4242 1110 2222,0,12,14)
+        //    D/CreditCardNumber: selectionStart=14, selectionEnd=14
+        //    D/CreditCardNumber: afterTextChanged(4242 1110 2222)
+        //    D/CreditCardNumber: selectionStart=14, selectionEnd=14
+        //
+        //
+        //    “4242 1110 2222”が入力された状態でカーソルが末尾にあり、”3”を入力したとき
+        //    Precondition: 4242 1110 2222<>
+        //    Actual: 4242 1110 2222 3<>
+        //    Expected: 4242 1110 2222 3<>
+        //    Log:
+        //    D/CreditCardNumber: beforeTextChanged(4242 1110 2222,14,0,1)
+        //    D/CreditCardNumber: selectionStart=14, selectionEnd=14
+        //    D/CreditCardNumber: onTextChanged(4242 1110 22223,14,0,1)
+        //    D/CreditCardNumber: selectionStart=15, selectionEnd=15
+        //    D/CreditCardNumber: afterTextChanged(4242 1110 22223)
+        //    D/CreditCardNumber: selectionStart=15, selectionEnd=15
+        //    D/CreditCardNumber: beforeTextChanged(4242 1110 22223,0,15,16)
+        //    D/CreditCardNumber: selectionStart=15, selectionEnd=15
+        //    D/CreditCardNumber: onTextChanged(4242 1110 2222 3,0,15,16)
+        //    D/CreditCardNumber: selectionStart=16, selectionEnd=16
+        //    D/CreditCardNumber: afterTextChanged(4242 1110 2222 3)
+        //    D/CreditCardNumber: selectionStart=16, selectionEnd=16
+        //
+        //
+        //    “4242 1110 2222”が入力された状態でカーソルが9文字目(1110の0とセパレーターの間、”..1110<ここ> 2222…”)にあり、”3”を入力したとき
+        //    Precondition: 4242 1110<> 2222
+        //    Actual: 4242 1110 <>3222 2
+        //    Expected: 4242 1110 3<>222 2
+        //    Log:
+        //    D/CreditCardNumber: beforeTextChanged(4242 1110 2222,9,0,1)
+        //    D/CreditCardNumber: selectionStart=9, selectionEnd=9
+        //    D/CreditCardNumber: onTextChanged(4242 11103 2222,9,0,1)
+        //    D/CreditCardNumber: selectionStart=10, selectionEnd=10
+        //    D/CreditCardNumber: afterTextChanged(4242 11103 2222)
+        //    D/CreditCardNumber: selectionStart=10, selectionEnd=10
+        //    D/CreditCardNumber: beforeTextChanged(4242 11103 2222,0,15,16)
+        //    D/CreditCardNumber: selectionStart=10, selectionEnd=10
+        //    D/CreditCardNumber: onTextChanged(4242 1110 3222 2,0,15,16)
+        //    D/CreditCardNumber: selectionStart=10, selectionEnd=10
+        //    D/CreditCardNumber: afterTextChanged(4242 1110 3222 2)
+        //    D/CreditCardNumber: selectionStart=10, selectionEnd=10
+        //
+        //
+        //    “4242 1110 2222”が入力された状態でカーソルが9文字目(1110の0とセパレーターの間、”..1110<ここ> 2222…”)にあり、”33”をペーストしたとき
+        //    Precondition: 4242 1110<> 2222
+        //    Actual: 4242 1110 3<>322 22
+        //    Expected: // 4242 1110 33<>22 22
+        //    Log:
+        //    D/CreditCardNumber: beforeTextChanged(4242 1110 2222,9,0,2)
+        //    D/CreditCardNumber: selectionStart=9, selectionEnd=9
+        //    D/CreditCardNumber: onTextChanged(4242 111033 2222,9,0,2)
+        //    D/CreditCardNumber: selectionStart=11, selectionEnd=11
+        //    D/CreditCardNumber: afterTextChanged(4242 111033 2222)
+        //    D/CreditCardNumber: selectionStart=11, selectionEnd=11
+        //    D/CreditCardNumber: beforeTextChanged(4242 111033 2222,0,16,17)
+        //    D/CreditCardNumber: selectionStart=11, selectionEnd=11
+        //    D/CreditCardNumber: onTextChanged(4242 1110 3322 22,0,16,17)
+        //    D/CreditCardNumber: selectionStart=11, selectionEnd=11
+        //    D/CreditCardNumber: afterTextChanged(4242 1110 3322 22)
+        //    D/CreditCardNumber: selectionStart=11, selectionEnd=11
+        //
+        //
+        //    “0”が入力された状態でカーソルが0文字目にあり、”424211102222321”をペーストしたとき
+        //    Precondition: <>0
+        //    Actual: 4242 1110 2222 32<>10
+        //    Expected: 4242 1110 2222 321<>0
+        //    Log:
+        //    D/CreditCardNumber: beforeTextChanged(0,0,0,15)
+        //    D/CreditCardNumber: selectionStart=0, selectionEnd=0
+        //    D/CreditCardNumber: onTextChanged(4242111022223210,0,0,15)
+        //    D/CreditCardNumber: selectionStart=15, selectionEnd=15
+        //    D/CreditCardNumber: afterTextChanged(4242111022223210)
+        //    D/CreditCardNumber: selectionStart=15, selectionEnd=15
+        //    D/CreditCardNumber: beforeTextChanged(4242111022223210,0,16,19)
+        //    D/CreditCardNumber: selectionStart=15, selectionEnd=15
+        //    D/CreditCardNumber: onTextChanged(4242 1110 2222 3210,0,16,19)
+        //    D/CreditCardNumber: selectionStart=17, selectionEnd=17
+        //    D/CreditCardNumber: afterTextChanged(4242 1110 2222 3210)
+        //    D/CreditCardNumber: selectionStart=17, selectionEnd=17
+
+
         private String beforeText;
+        private int beforeIndex;
 
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            Log.d("CreditCardNumber", String.format("beforeTextChanged(%s,%d,%d,%d)", s, start, count, after));
+            Log.d("CreditCardNumber", String.format("selectionStart=%d, selectionEnd=%d", getSelectionStart(), getSelectionEnd()));
             beforeText = s.toString();
+            beforeIndex = getSelectionStart();
         }
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
+            Log.d("CreditCardNumber", String.format("onTextChanged(%s,%d,%d,%d)", s, start, before, count));
+            Log.d("CreditCardNumber", String.format("selectionStart=%d, selectionEnd=%d", getSelectionStart(), getSelectionEnd()));
         }
 
         @Override
         public void afterTextChanged(Editable s) {
+            Log.d("CreditCardNumber", String.format("afterTextChanged(%s)", s));
+            Log.d("CreditCardNumber", String.format("selectionStart=%d, selectionEnd=%d", getSelectionStart(), getSelectionEnd()));
 
             final String beforeCardNumber = removeSeparators(beforeText);
             final int beforeRawLength = beforeText.length();
@@ -77,11 +186,17 @@ public class CreditCardNumberEditText extends AppCompatEditText {
 
             final CreditCardBrand brand = CreditCardBrand.getBrand(afterCardNumber);
             // この後にseparatorを一括で挿入するので、すでに挿入済みのseparatorを削除しておく
-            removeSeparators(afterRawText);
-            insertSeparator(afterRawText, brand);
+            removeSeparators(afterRawText, 0);
+            insertSeparator(afterRawText, brand, 0);
 
             if (!TextUtils.equals(s, afterRawText)) {
                 s.replace(0, afterRawLength, afterRawText.toString());
+                // セパレーター挿入後にカーソル位置がずれるので調整する
+                StringBuilder beforeRawText = new StringBuilder(beforeText);
+                int selectionIndex = removeSeparators(beforeRawText, beforeIndex);
+                selectionIndex = insertSeparator(beforeRawText, brand, selectionIndex);
+                setSelection(selectionIndex);
+                Log.d("CreditCardNumber", String.format("selectionStart=%d, selectionEnd=%d", getSelectionStart(), getSelectionEnd()));
             }
         }
     };
@@ -179,33 +294,47 @@ public class CreditCardNumberEditText extends AppCompatEditText {
     /**
      * 文字列から全てのセパレーターを除去する
      *
-     * @param sb 文字列
+     * @param sb             文字列
+     * @param selectionIndex セパレーター除去前のカーソル位置
+     * @return セパレーター除去後のカーソル位置
      */
-    private static void removeSeparators(StringBuilder sb) {
+    private static int removeSeparators(StringBuilder sb, int selectionIndex) {
+        int newSelection = selectionIndex;
         for (int i = sb.length() - 1; i >= 0; i--) {
             if (sb.charAt(i) == SEPARATOR) {
                 sb.deleteCharAt(i);
+                if (i < selectionIndex) {
+                    --newSelection;
+                }
             }
         }
+        return newSelection;
     }
 
     /**
      * カード番号情報に対応する書式に従ってセパレーターを挿入する
      *
-     * @param sb    カード番号
-     * @param brand カード番号情報
+     * @param sb             カード番号
+     * @param brand          カード番号情報
+     * @param selectionIndex カーソル位置
+     * @return セパレーター挿入後のカーソル位置
      */
-    private void insertSeparator(StringBuilder sb, CreditCardBrand brand) {
+    private static int insertSeparator(StringBuilder sb, CreditCardBrand brand, int selectionIndex) {
+        int newSelectionIndex = selectionIndex;
         final int[] format = brand.getFormat();
         int i = 0;
         for (int number : format) {
             i += number;
             if (sb.length() > i) {
                 sb.insert(i, SEPARATOR);
+                if (i <= newSelectionIndex) {
+                    ++newSelectionIndex;
+                }
             } else {
                 break;
             }
             i++;
         }
+        return newSelectionIndex;
     }
 }
