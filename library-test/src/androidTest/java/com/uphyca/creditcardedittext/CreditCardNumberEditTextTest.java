@@ -88,21 +88,44 @@ public class CreditCardNumberEditTextTest {
     }
 
     /**
-     * セクションの先頭の文字が除去されたら直前のセパレーターを除去する
+     * セクションの先頭の文字が削除されたら直前のセパレーターを除去する
      */
     @Test
-    public void removeSeparator() throws Exception {
-        // セパレーターを含む番号"4242 1"を入力しておく
+    public void removeTrailingSeparator() throws Exception {
+        // セパレーターを含む番号"4242 1110 2"を入力しておく
         onView(withId(R.id.credit_card_number))
-                .perform(typeText("42421"), closeSoftKeyboard())
-                .check(matches(withText("4242 1")))
-                .check(matches(withSelection(6)));
+                .perform(typeText("424211102"), closeSoftKeyboard())
+                .check(matches(withText("4242 1110 2")))
+                .check(matches(withSelection(11)));
 
-        // セパレーターの次の文字"1"を削除すると、隣接するセパレーターが削除される
+        // セパレーターの次の文字"2"を削除すると、隣接するセパレーターが削除される
         onView(withId(R.id.credit_card_number))
                 .perform(pressKey(KeyEvent.KEYCODE_DEL))
-                .check(matches(withText("4242")))
-                .check(matches(withSelection(4)));
+                .check(matches(withText("4242 1110")))
+                .check(matches(withSelection(9)));
+    }
+    
+    /**
+     * セパレーターが削除されたら直前の文字を削除する（セパレーターは表示上の空白として表現しているため）
+     */
+    @Test
+    public void removePreviousCharacterWhenSeparatorDeleted() throws Exception {
+        // セパレーターを含む番号"4242 1110 2"を入力しておく
+        onView(withId(R.id.credit_card_number))
+                .perform(typeText("424211102"), closeSoftKeyboard())
+                .check(matches(withText("4242 1110 2")))
+                .check(matches(withSelection(11)));
+
+        // カーソルをセパレーターの位置に移動する
+        onView(withId(R.id.credit_card_number))
+                .perform(pressKey(KeyEvent.KEYCODE_DPAD_LEFT), closeSoftKeyboard())
+                .check(matches(withSelection(10)));
+
+        // セパレーターを削除すると直前の文字"0"が削除される
+        onView(withId(R.id.credit_card_number))
+                .perform(pressKey(KeyEvent.KEYCODE_DEL))
+                .check(matches(withText("4242 1112")))
+                .check(matches(withSelection(8)));
     }
 
     /**
