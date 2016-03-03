@@ -35,7 +35,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'
 
     androidTestCompile 'com.android.support:support-annotations:23.1.1'
-    androidTestCompile 'com.android.support.test:runner:0.4.1'
+    androidTestCompile 'com.android.support.test:runner:0.5'
 
     // @aarを指定せずとも問題無いはずだが、なぜかエラーが出るので @aar をつけて回避しておく。
     // Error:Module 'com.squareup.assertj:assertj-android-appcompat-v7:1.1.1' depends on one or more Android Libraries but is a jar
