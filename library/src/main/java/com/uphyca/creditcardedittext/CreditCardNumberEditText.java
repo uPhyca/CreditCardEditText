@@ -168,12 +168,30 @@ public class CreditCardNumberEditText extends AppCompatEditText {
             final String afterCardNumber = removeSeparators(s.toString());
             final StringBuilder afterRawText = new StringBuilder(s);
 
-            // セパレーターが削除されたら直前の文字を削除する
             boolean noSelection = beforeSelectionStart == beforeSelectionEnd;
-            boolean deleteKeyEntered = noSelection && beforeSelectionStart > 1 && getSelectionStart() == beforeSelectionStart - 1 && getSelectionStart() == getSelectionEnd();
-            boolean separatorDeleted = deleteKeyEntered && beforeSelectionStart < beforeRawLength && beforeText.charAt(beforeSelectionStart - 1) == SEPARATOR;
+            // DELキーでの文字削除か否か
+            boolean deleteKeyEntered = noSelection // 範囲選択状態ではない
+                    && beforeSelectionStart > 1 // カーソルが1文字目より後（DELキーで削除でいる状態）だったか否か
+                    && getSelectionStart() == beforeSelectionStart - 1 // カーソルが一文字分前に来たか否か
+                    && getSelectionStart() == getSelectionEnd(); // 範囲選択状態ではない
+            // DELキーで削除されたのがセパレーターか否か
+            boolean separatorDeleted = deleteKeyEntered
+                    && beforeSelectionStart < beforeRawLength
+                    && equalsChatAt(beforeText, beforeSelectionStart - 1, SEPARATOR); // 削除されたのがセパレーターか否か
+            // セパレーターが削除されたら直前の文字を削除する
             if (separatorDeleted) {
-                afterRawText.deleteCharAt(getSelectionStart() - 1);
+                // セパレーター位置でスペースを入力後に連続したセパレーターの一つが削除された場合、
+                // DELキーによる削除とみなすとセパレーターの前の文字が意図せず消えるのを抑止する。
+                // Precondition:
+                //   "4242 1110<> 2"
+                // スペースを入力
+                //   "4242 1110 <> 2"
+                // 編集でスペースが整形される。
+                // この状態は"4242 1110 <> 2"からDELキーで削除した状態と変わらないので、セパレーターが連続しているかどうかで判断する
+                //   "4242 1110<> 2"
+                if (!equalsChatAt(beforeText, beforeSelectionStart, SEPARATOR)) {
+                    afterRawText.deleteCharAt(getSelectionStart() - 1);
+                }
             }
 
             final CreditCardBrand brand = CreditCardBrand.getBrand(afterCardNumber);
@@ -188,6 +206,7 @@ public class CreditCardNumberEditText extends AppCompatEditText {
                 int selectionIndex = separatorDeleted ? beforeSelectionStart - 1 : beforeSelectionStart;
                 selectionIndex = removeSeparators(beforeRawText, selectionIndex);
                 selectionIndex = insertSeparator(beforeRawText, brand, selectionIndex);
+                selectionIndex = Math.min(selectionIndex, brand.getMaxLength() + brand.getSeparatorCount());
                 setSelection(selectionIndex);
             }
         }
@@ -205,28 +224,44 @@ public class CreditCardNumberEditText extends AppCompatEditText {
         public CharSequence filter(CharSequence source, int start, int end,
                                    Spanned dest, int dstart, int dend) {
 
+            // 入力文字（数字かどうか）をチェック
+            CharSequence out = super.filter(source, start, end, dest, dstart, dend);
+
+            if (TextUtils.equals(out, EMPTY)) {
+                return EMPTY;
+            }
+
+            if (out != null) {
+                source = out;
+                start = 0;
+                end = source.length();
+            }
+
             //destにsourceをマージした文字列
             String tempRawText = new StringBuilder(dest).replace(dstart, dend, source.subSequence(start, end).toString()).toString();
             String tempCardNumber = removeSeparators(tempRawText);
             CreditCardBrand tempBrand = CreditCardBrand.getBrand(tempCardNumber);
-            int maxLength = tempBrand.getMaxLength() + tempBrand.getSeparatorCount();
+
+            //ブランドごとの書式のセパレーター位置以外に入力されたセパレーターを除去する
+            StringBuilder sourceBuf = new StringBuilder(source.subSequence(start, end));
+            for (int i = end - 1; i >= start; --i) {
+                if (sourceBuf.charAt(i) == SEPARATOR) {
+                    int index = i + dstart;
+                    if (!tempBrand.isSeparatorPosition(index)) {
+                        sourceBuf.deleteCharAt(i);
+                    }
+                }
+            }
+            if (!TextUtils.equals(source, sourceBuf)) {
+                source = sourceBuf;
+                start = 0;
+                end = source.length();
+            }
 
             // 入力文字数をチェック
+            int maxLength = tempBrand.getMaxLength() + tempBrand.getSeparatorCount();
             CharSequence lengthOut = lengthFilter(maxLength, source, start, end, dest, dstart, dend);
-            if (TextUtils.equals(lengthOut, EMPTY)) {
-                // length over
-                return EMPTY;
-            }
-
-            if (lengthOut != null) {
-                source = lengthOut;
-                start = 0;
-                end = lengthOut.length();
-            }
-
-            // 入力文字（数字かどうか）をチェック
-            CharSequence out = super.filter(source, start, end, dest, dstart, dend);
-            return out == null ? lengthOut : out;
+            return lengthOut == null ? source : lengthOut;
         }
 
         // Taken from android.text.InputFilter.LengthFilter
@@ -328,5 +363,18 @@ public class CreditCardNumberEditText extends AppCompatEditText {
             i++;
         }
         return newSelectionIndex;
+    }
+
+    /**
+     * 文字列中の指定位置の文字と、指定の文字を比較する。
+     * 指定位置が有効ではない場合はfalseを返す。
+     *
+     * @param s     文字列
+     * @param index 対象文字列中で比較する文字の位置
+     * @param c     比較文字
+     * @return 文字が同じ場合はtrue、それ以外はfalse
+     */
+    private static boolean equalsChatAt(CharSequence s, int index, char c) {
+        return index < s.length() ? s.charAt(index) == c : false;
     }
 }
