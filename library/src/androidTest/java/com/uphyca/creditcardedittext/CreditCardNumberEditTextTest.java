@@ -3,8 +3,6 @@ package com.uphyca.creditcardedittext;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import android.text.Editable;
-import android.widget.EditText;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -99,80 +97,5 @@ public class CreditCardNumberEditTextTest {
         assertThat(underTest).hasBrand(CreditCardBrand.DINERS_CLUB);
         assertThat(underTest).hasTextString("3056 930902 5904");
         assertThat(underTest).hasNumber("30569309025904");
-    }
-
-    /**
-     * セパレーターを挿入する
-     */
-    @Test
-    public void insertSeparator() throws Exception {
-        underTest.setText("4242");
-        assertThat(underTest).hasTextString("4242");
-        assertThat(underTest).hasNumber("4242");
-
-        underTest.append("4");
-        assertThat(underTest).hasTextString("4242 4");
-        assertThat(underTest).hasNumber("42424");
-    }
-
-    /**
-     * セパレーターを除去する
-     */
-    @Test
-    public void removeSeparator() throws Exception {
-        underTest.setText("42424");
-        assertThat(underTest).hasTextString("4242 4");
-        assertThat(underTest).hasNumber("42424");
-
-        trim(underTest, 1);
-        assertThat(underTest).hasTextString("4242");
-        assertThat(underTest).hasNumber("4242");
-    }
-
-    /**
-     * 最大文字数までしか入力できないこと
-     */
-    @Test
-    public void maxLength() throws Exception {
-        underTest.setText("4242424242424242");
-        underTest.append("4");
-        assertThat(underTest).hasTextString("4242 4242 4242 4242");
-        assertThat(underTest).hasNumber("4242424242424242");
-    }
-
-    /**
-     * 最大文字数を超える場合、切り捨てる
-     */
-    @Test
-    public void overflow() throws Exception {
-        underTest.setText("42424242424242429");
-        assertThat(underTest).hasTextString("4242 4242 4242 4242");
-        assertThat(underTest).hasNumber("4242424242424242");
-    }
-
-    /**
-     * 追加後、最大文字数を超える場合、切り捨てる
-     */
-    @Test
-    public void appendOverflow() throws Exception {
-        underTest.setText("424242424242424");
-        assertThat(underTest).hasTextString("4242 4242 4242 424");
-        assertThat(underTest).hasNumber("424242424242424");
-
-        underTest.append("29");
-        assertThat(underTest).hasTextString("4242 4242 4242 4242");
-        assertThat(underTest).hasNumber("4242424242424242");
-    }
-
-    /**
-     * 末尾の文字を指定の文字数だけ削除する
-     *
-     * @param editText 文字を削除する対象
-     * @param count    文字数
-     */
-    private static void trim(EditText editText, int count) {
-        Editable editableText = editText.getEditableText();
-        int length = editableText.length();
-        editableText.delete(length - count, length);
     }
 }
