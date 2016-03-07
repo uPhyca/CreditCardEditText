@@ -10,6 +10,13 @@
     tools:context=".MainActivity">
 
     <com.uphyca.creditcardedittext.CreditCardNumberEditText
+        android:id="@+id/credit_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/brand"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/credit_card" />
 </RelativeLayout>
