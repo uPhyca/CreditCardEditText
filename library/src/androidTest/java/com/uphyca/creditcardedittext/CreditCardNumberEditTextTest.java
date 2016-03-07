@@ -7,8 +7,11 @@ import android.support.test.runner.AndroidJUnit4;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import static com.uphyca.creditcardedittext.Assertions.assertThat;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
  * Test for {@link CreditCardNumberEditText}.
@@ -19,8 +22,12 @@ public class CreditCardNumberEditTextTest {
     private CreditCardNumberEditText underTest;
     private Context targetContext;
 
+    @Mock
+    private CreditCardNumberListener mockCreditCardNumberListener;
+
     @Before
     public void setUp() throws Exception {
+        initMocks(this);
         targetContext = InstrumentationRegistry.getTargetContext();
         underTest = new CreditCardNumberEditText(targetContext);
         underTest.onFinishInflate();
@@ -98,4 +105,26 @@ public class CreditCardNumberEditTextTest {
         assertThat(underTest).hasTextString("3056 930902 5904");
         assertThat(underTest).hasNumber("30569309025904");
     }
+
+    /**
+     * カード番号のフォーマットでセパレーターが編集されなかった場合の変更を通知する
+     */
+    @Test
+    public void sendNumberChanged() throws Exception {
+        underTest.addNumberListener(mockCreditCardNumberListener);
+        underTest.setText("4");
+        Mockito.verify(mockCreditCardNumberListener, Mockito.times(1)).onChanged("4", CreditCardBrand.VISA);
+    }
+
+
+    /**
+     * カード番号のフォーマットでセパレーターが編集された場合の変更を通知する
+     */
+    @Test
+    public void sendNumberChangedAfterFormatNumber() throws Exception {
+        underTest.addNumberListener(mockCreditCardNumberListener);
+        underTest.setText("4242424242424242");
+        Mockito.verify(mockCreditCardNumberListener, Mockito.times(1)).onChanged("4242424242424242", CreditCardBrand.VISA);
+    }
+
 }
