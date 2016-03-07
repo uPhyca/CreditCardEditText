@@ -11,15 +11,23 @@ import android.text.TextWatcher;
 import android.text.method.NumberKeyListener;
 import android.util.AttributeSet;
 
+import java.util.ArrayList;
+
 /**
- * クレジットカード番号入力用の EditText
- * カード会社ごとに見せ方を変える
- * カード会社の判定もできる
+ * クレジットカード番号入力用の EditText。
+ * カード会社ごとの書式に従ってフォーマットした番号を表示する。
+ * <p/>
+ * 入力されているカード番号に対応するカード会社を取得するには {@link #getBrand()}を使う。
+ * <p/>
+ * カード番号の変更を検知する場合は{@link CreditCardNumberListener}を使う。
+ * <p/>
+ * 入力文字列の監視に{@link #addTextChangedListener}で登録した{@link TextWatcher}を使う場合、ユーザー入力による呼び出しの後にカード番号のフォーマットによる変更でもう一度呼び出されることがある点に留意すること。
  */
 public class CreditCardNumberEditText extends AppCompatEditText {
 
     private static final char SEPARATOR = ' ';
     private static final String EMPTY = "";
+    private ArrayList<CreditCardNumberListener> listeners;
 
     public CreditCardNumberEditText(Context context) {
         super(context);
@@ -42,6 +50,33 @@ public class CreditCardNumberEditText extends AppCompatEditText {
 
         addTextChangedListener(textWatcher);
     }
+
+    /**
+     * クレジットカード番号の変更を受け取るためのリスナーを登録する
+     *
+     * @param listener リスナー
+     */
+    public void addNumberListener(CreditCardNumberListener listener) {
+        if (listeners == null) {
+            listeners = new ArrayList<>();
+        }
+        listeners.add(listener);
+    }
+
+    /**
+     * 登録されたリスナーを解除する。指定されたリスナーが登録されていない場合は何もしない。
+     *
+     * @param listener リスナー
+     */
+    public void removeNumberListener(CreditCardNumberListener listener) {
+        if (listeners != null) {
+            int i = listeners.indexOf(listener);
+            if (i >= 0) {
+                listeners.remove(i);
+            }
+        }
+    }
+
 
     private final TextWatcher textWatcher = new TextWatcher() {
 
@@ -208,6 +243,19 @@ public class CreditCardNumberEditText extends AppCompatEditText {
                 selectionIndex = insertSeparator(beforeRawText, brand, selectionIndex);
                 selectionIndex = Math.min(selectionIndex, brand.getMaxLength() + brand.getSeparatorCount());
                 setSelection(selectionIndex);
+            } else {
+                // 編集完了時にだけリスナーを呼ぶ
+                sendNumberChanged(afterCardNumber, brand);
+            }
+        }
+
+        private void sendNumberChanged(String number, CreditCardBrand brand) {
+            if (listeners != null) {
+                final ArrayList<CreditCardNumberListener> list = listeners;
+                final int count = list.size();
+                for (int i = 0; i < count; i++) {
+                    list.get(i).onChanged(number, brand);
+                }
             }
         }
     };

@@ -3,14 +3,15 @@ package com.uphyca.creditcardedittext;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import android.text.Editable;
-import android.widget.EditText;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import static com.uphyca.creditcardedittext.Assertions.assertThat;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
  * Test for {@link CreditCardNumberEditText}.
@@ -21,8 +22,12 @@ public class CreditCardNumberEditTextTest {
     private CreditCardNumberEditText underTest;
     private Context targetContext;
 
+    @Mock
+    private CreditCardNumberListener mockCreditCardNumberListener;
+
     @Before
     public void setUp() throws Exception {
+        initMocks(this);
         targetContext = InstrumentationRegistry.getTargetContext();
         underTest = new CreditCardNumberEditText(targetContext);
         underTest.onFinishInflate();
@@ -102,77 +107,24 @@ public class CreditCardNumberEditTextTest {
     }
 
     /**
-     * セパレーターを挿入する
+     * カード番号のフォーマットでセパレーターが編集されなかった場合の変更を通知する
      */
     @Test
-    public void insertSeparator() throws Exception {
-        underTest.setText("4242");
-        assertThat(underTest).hasTextString("4242");
-        assertThat(underTest).hasNumber("4242");
-
-        underTest.append("4");
-        assertThat(underTest).hasTextString("4242 4");
-        assertThat(underTest).hasNumber("42424");
+    public void sendNumberChanged() throws Exception {
+        underTest.addNumberListener(mockCreditCardNumberListener);
+        underTest.setText("4");
+        Mockito.verify(mockCreditCardNumberListener, Mockito.times(1)).onChanged("4", CreditCardBrand.VISA);
     }
 
-    /**
-     * セパレーターを除去する
-     */
-    @Test
-    public void removeSeparator() throws Exception {
-        underTest.setText("42424");
-        assertThat(underTest).hasTextString("4242 4");
-        assertThat(underTest).hasNumber("42424");
-
-        trim(underTest, 1);
-        assertThat(underTest).hasTextString("4242");
-        assertThat(underTest).hasNumber("4242");
-    }
 
     /**
-     * 最大文字数までしか入力できないこと
+     * カード番号のフォーマットでセパレーターが編集された場合の変更を通知する
      */
     @Test
-    public void maxLength() throws Exception {
+    public void sendNumberChangedAfterFormatNumber() throws Exception {
+        underTest.addNumberListener(mockCreditCardNumberListener);
         underTest.setText("4242424242424242");
-        underTest.append("4");
-        assertThat(underTest).hasTextString("4242 4242 4242 4242");
-        assertThat(underTest).hasNumber("4242424242424242");
+        Mockito.verify(mockCreditCardNumberListener, Mockito.times(1)).onChanged("4242424242424242", CreditCardBrand.VISA);
     }
 
-    /**
-     * 最大文字数を超える場合、切り捨てる
-     */
-    @Test
-    public void overflow() throws Exception {
-        underTest.setText("42424242424242429");
-        assertThat(underTest).hasTextString("4242 4242 4242 4242");
-        assertThat(underTest).hasNumber("4242424242424242");
-    }
-
-    /**
-     * 追加後、最大文字数を超える場合、切り捨てる
-     */
-    @Test
-    public void appendOverflow() throws Exception {
-        underTest.setText("424242424242424");
-        assertThat(underTest).hasTextString("4242 4242 4242 424");
-        assertThat(underTest).hasNumber("424242424242424");
-
-        underTest.append("29");
-        assertThat(underTest).hasTextString("4242 4242 4242 4242");
-        assertThat(underTest).hasNumber("4242424242424242");
-    }
-
-    /**
-     * 末尾の文字を指定の文字数だけ削除する
-     *
-     * @param editText 文字を削除する対象
-     * @param count    文字数
-     */
-    private static void trim(EditText editText, int count) {
-        Editable editableText = editText.getEditableText();
-        int length = editableText.length();
-        editableText.delete(length - count, length);
-    }
 }
