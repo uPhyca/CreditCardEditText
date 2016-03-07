@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.uphyca:creditcardedittext:1.0'
+    compile 'com.uphyca:creditcardedittext:1.1'
 }
 ```
 

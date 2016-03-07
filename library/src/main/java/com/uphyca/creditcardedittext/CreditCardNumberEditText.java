@@ -16,11 +16,11 @@ import java.util.ArrayList;
 /**
  * クレジットカード番号入力用の EditText。
  * カード会社ごとの書式に従ってフォーマットした番号を表示する。
- * <p/>
+ *
  * 入力されているカード番号に対応するカード会社を取得するには {@link #getBrand()}を使う。
- * <p/>
+ *
  * カード番号の変更を検知する場合は{@link CreditCardNumberListener}を使う。
- * <p/>
+ *
  * 入力文字列の監視に{@link #addTextChangedListener}で登録した{@link TextWatcher}を使う場合、ユーザー入力による呼び出しの後にカード番号のフォーマットによる変更でもう一度呼び出されることがある点に留意すること。
  */
 public class CreditCardNumberEditText extends AppCompatEditText {
