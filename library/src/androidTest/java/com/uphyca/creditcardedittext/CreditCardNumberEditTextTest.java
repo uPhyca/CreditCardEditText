@@ -107,6 +107,18 @@ public class CreditCardNumberEditTextTest {
     }
 
     /**
+     * 不明（American Express, JCB, Diners Clubのいずれか）
+     */
+    @Test
+    public void americanExpressOrJCBOrDinersClub() throws Exception {
+        underTest.setText("3");
+
+        assertThat(underTest).hasBrand(CreditCardBrand.UNKNOWN);
+        assertThat(underTest).hasTextString("3");
+        assertThat(underTest).hasNumber("3");
+    }
+
+    /**
      * カード番号のフォーマットでセパレーターが編集されなかった場合の変更を通知する
      */
     @Test
