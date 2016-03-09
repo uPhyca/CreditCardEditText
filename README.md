@@ -1,4 +1,4 @@
-# CreditCardEditText
+# CreditCardEditText [ ![Download](https://api.bintray.com/packages/uphyca/maven/creditcardedittext/images/download.svg) ](https://bintray.com/uphyca/maven/creditcardedittext/)
 クレジットカード番号入力用の EditText
 
 ## Set-up
