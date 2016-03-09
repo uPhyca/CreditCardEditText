@@ -15,6 +15,9 @@ dependencies {
 }
 ```
 
+
+![CreditCardEditText](CreditCardEditText.gif)
+
 # License
 
     Copyright 2016 uPhyca, Inc.
