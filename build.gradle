@@ -27,11 +27,11 @@ subprojects {
 
     task('checkstyle', type: Checkstyle) {
         configFile rootProject.file('checkstyle.xml')
-        source 'src/main/java'
+        source 'src'
         ignoreFailures false
         showViolations true
         include '**/*.java'
-
+        include '**/*.xml'
         classpath = files()
     }
 

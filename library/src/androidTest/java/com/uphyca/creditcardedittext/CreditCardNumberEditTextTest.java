@@ -86,7 +86,7 @@ public class CreditCardNumberEditTextTest {
      * JCB
      */
     @Test
-    public void JCB() throws Exception {
+    public void jcb() throws Exception {
         underTest.setText("3530111333300000");
 
         assertThat(underTest).hasBrand(CreditCardBrand.JCB);
