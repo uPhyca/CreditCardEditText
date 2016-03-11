@@ -21,3 +21,21 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+subprojects {
+    plugins.apply('checkstyle')
+
+    task('checkstyle', type: Checkstyle) {
+        configFile rootProject.file('checkstyle.xml')
+        source 'src'
+        ignoreFailures false
+        showViolations true
+        include '**/*.java'
+        include '**/*.xml'
+        classpath = files()
+    }
+
+    afterEvaluate {
+        tasks.findByName('check').dependsOn('checkstyle')
+    }
+}
