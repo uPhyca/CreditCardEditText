@@ -16,6 +16,21 @@ dependencies {
 ```
 
 
+### Usage
+
+```xml
+<com.uphyca.creditcardedittext.CreditCardNumberEditText
+    android:id="@+id/credit_card_number"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
+
+<com.uphyca.creditcardedittext.CreditCardDateEditText
+    android:id="@+id/credit_card_date"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
+```
+
+
 ![CreditCardEditText](CreditCardEditText.gif)
 
 # License
