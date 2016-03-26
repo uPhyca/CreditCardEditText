@@ -7,12 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.uphyca.creditcardedittext.library_test.R;
 
-public class MainActivity extends AppCompatActivity {
+public class CreditCardNumberActivity extends AppCompatActivity {
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_credit_card_number);
     }
 }

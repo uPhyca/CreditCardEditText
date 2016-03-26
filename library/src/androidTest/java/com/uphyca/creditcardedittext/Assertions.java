@@ -9,4 +9,8 @@ public class Assertions {
     public static CreditCardNumberEditTextAssert assertThat(CreditCardNumberEditText actual) {
         return new CreditCardNumberEditTextAssert(actual);
     }
+
+    public static CreditCardDateEditTextAssert assertThat(CreditCardDateEditText actual) {
+        return new CreditCardDateEditTextAssert(actual);
+    }
 }
