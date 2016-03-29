@@ -18,11 +18,11 @@ import java.util.regex.Pattern;
 /**
  * クレジットカード有効期限入力用の EditText。
  * MM/yyの書式に従ってフォーマットした有効期限を表示する。
- * <p/>
+ *
  * 入力されている有効期限を取得するには {@link #getDate()}を使う。
- * <p/>
+ *
  * 有効期限の変更を検知する場合は{@link CreditCardDateListener}を使う。
- * <p/>
+ *
  * 入力文字列の監視に{@link #addTextChangedListener}で登録した{@link TextWatcher}を使う場合、ユーザー入力による呼び出しの後に有効期限のフォーマットによる変更でもう一度呼び出されることがある点に留意すること。
  */
 public class CreditCardDateEditText extends AppCompatEditText {
