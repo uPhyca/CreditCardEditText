@@ -41,8 +41,8 @@ import static com.uphyca.creditcardedittext.ViewMatchers.withSelection;
 public class CreditCardNumberEditTextTest {
 
     @Rule
-    public ActivityTestRule<MainActivity> mActivityRule = new ActivityTestRule<>(
-            MainActivity.class);
+    public ActivityTestRule<CreditCardNumberActivity> mActivityRule = new ActivityTestRule<>(
+            CreditCardNumberActivity.class);
 
     UiDevice device;
 

@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
 import com.uphyca.creditcardedittext.CreditCardBrand;
+import com.uphyca.creditcardedittext.CreditCardDateEditText;
 import com.uphyca.creditcardedittext.CreditCardNumberEditText;
 import com.uphyca.creditcardedittext.CreditCardNumberListener;
 
@@ -12,6 +13,7 @@ public class MainActivity extends AppCompatActivity {
 
     private CreditCardNumberEditText numberView;
     private TextView brandView;
+    private CreditCardDateEditText dateView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void bindViews() {
-        numberView = (CreditCardNumberEditText) findViewById(R.id.credit_card);
+        numberView = (CreditCardNumberEditText) findViewById(R.id.credit_card_number);
         brandView = (TextView) findViewById(R.id.brand);
         numberView.addNumberListener(new CreditCardNumberListener() {
             @Override
@@ -29,5 +31,6 @@ public class MainActivity extends AppCompatActivity {
                 brandView.setText(brand.name());
             }
         });
+        dateView = (CreditCardDateEditText) findViewById(R.id.credit_card_date);
     }
 }

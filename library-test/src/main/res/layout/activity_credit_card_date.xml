@@ -7,23 +7,11 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".MainActivity">
-
-    <com.uphyca.creditcardedittext.CreditCardNumberEditText
-        android:id="@+id/credit_card_number"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/brand"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/credit_card_number" />
+    tools:context="com.uphyca.creditcardedittext.MainActivity">
 
     <com.uphyca.creditcardedittext.CreditCardDateEditText
         android:id="@+id/credit_card_date"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/brand"/>
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>
