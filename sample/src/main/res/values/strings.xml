@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">CreditCardEditText</string>
+    <string name="credit_card_number">credit card number</string>
+    <string name="credit_card_date">MM/yy</string>
 </resources>
