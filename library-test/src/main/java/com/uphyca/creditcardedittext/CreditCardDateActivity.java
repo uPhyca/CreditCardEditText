@@ -3,7 +3,7 @@ package com.uphyca.creditcardedittext;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.uphyca.creditcardedittext.library_test.R;
 

@@ -5,12 +5,12 @@ android {
 
     defaultConfig {
         applicationId "com.uphyca.creditcardedittext.library_test"
-        minSdkVersion 14
+        minSdkVersion 18
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -23,11 +23,11 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     testImplementation "junit:junit:4.12"
-    implementation "com.android.support:appcompat-v7:28.0.0"
+    implementation "androidx.appcompat:appcompat:1.1.0"
     implementation project(":library")
 
-    androidTestImplementation "com.android.support:support-annotations:28.0.0"
-    androidTestImplementation "com.android.support.test:runner:0.5"
+    androidTestImplementation "androidx.annotation:annotation:1.1.0"
+    androidTestImplementation "androidx.test.ext:junit:1.1.1"
 
     // @aarを指定せずとも問題無いはずだが、なぜかエラーが出るので @aar をつけて回避しておく。
     // Error:Module "com.squareup.assertj:assertj-android-appcompat-v7:1.1.1" depends on one or more Android Libraries but is a jar
@@ -37,6 +37,6 @@ dependencies {
     // @aarを明示するとdependenciesが解決されないので明示する
     //androidTestImplementation "org.assertj:assertj-core:1.7.1"
 
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:2.2.2"
-    androidTestImplementation "com.android.support.test.uiautomator:uiautomator-v18:2.1.2"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.2.0"
+    androidTestImplementation "androidx.test.uiautomator:uiautomator:2.2.0"
 }
