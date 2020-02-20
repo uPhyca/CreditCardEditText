@@ -1,4 +1,4 @@
-apply plugin: 'com.android.application'
+apply plugin: "com.android.application"
 
 android {
     compileSdkVersion 23
@@ -16,28 +16,28 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.1.1'
-    compile project(':library')
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    testImplementation "junit:junit:4.12"
+    implementation "com.android.support:appcompat-v7:23.1.1"
+    implementation project(":library")
 
-    androidTestCompile 'com.android.support:support-annotations:23.1.1'
-    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestImplementation "com.android.support:support-annotations:23.1.1"
+    androidTestImplementation "com.android.support.test:runner:0.5"
 
     // @aarを指定せずとも問題無いはずだが、なぜかエラーが出るので @aar をつけて回避しておく。
-    // Error:Module 'com.squareup.assertj:assertj-android-appcompat-v7:1.1.1' depends on one or more Android Libraries but is a jar
+    // Error:Module "com.squareup.assertj:assertj-android-appcompat-v7:1.1.1" depends on one or more Android Libraries but is a jar
     // 関連しそうなAssertj-androidのissue  https://github.com/square/assertj-android/issues/180
-    //androidTestCompile 'com.squareup.assertj:assertj-android:1.1.1@aar'
-    androidTestCompile 'com.squareup.assertj:assertj-android:1.1.1'
+    //androidTestImplementation "com.squareup.assertj:assertj-android:1.1.1@aar"
+    androidTestImplementation "com.squareup.assertj:assertj-android:1.1.1"
     // @aarを明示するとdependenciesが解決されないので明示する
-    //androidTestCompile 'org.assertj:assertj-core:1.7.1'
+    //androidTestImplementation "org.assertj:assertj-core:1.7.1"
 
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
-    androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:2.2.2"
+    androidTestImplementation "com.android.support.test.uiautomator:uiautomator-v18:2.1.2"
 }

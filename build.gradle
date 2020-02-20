@@ -2,10 +2,11 @@
 
 buildscript {
     repositories {
+        google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.0'
+        classpath "com.android.tools.build:gradle:3.5.3"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -14,6 +15,7 @@ buildscript {
 
 allprojects {
     repositories {
+        google()
         jcenter()
     }
 }
@@ -23,19 +25,19 @@ task clean(type: Delete) {
 }
 
 subprojects {
-    plugins.apply('checkstyle')
+    plugins.apply("checkstyle")
 
-    task('checkstyle', type: Checkstyle) {
-        configFile rootProject.file('checkstyle.xml')
-        source 'src'
+    task("checkstyle", type: Checkstyle) {
+        configFile rootProject.file("checkstyle.xml")
+        source "src"
         ignoreFailures false
         showViolations true
-        include '**/*.java'
-        include '**/*.xml'
+        include "**/*.java"
+        include "**/*.xml"
         classpath = files()
     }
 
     afterEvaluate {
-        tasks.findByName('check').dependsOn('checkstyle')
+        tasks.findByName("check").dependsOn("checkstyle")
     }
 }
