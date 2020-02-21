@@ -1,4 +1,4 @@
-# CreditCardEditText [![wercker status](https://app.wercker.com/status/319dd3cd582ba9487016f3679c48b60e/s/master "wercker status")](https://app.wercker.com/project/bykey/319dd3cd582ba9487016f3679c48b60e) [ ![Download](https://api.bintray.com/packages/uphyca/maven/creditcardedittext/images/download.svg) ](https://bintray.com/uphyca/maven/creditcardedittext/)
+# CreditCardEditText [![Build Status](https://app.bitrise.io/app/7001d38c52c3da45/status.svg?token=ecLCofa8SARRROcbUe8ddg&branch=master)](https://app.bitrise.io/app/7001d38c52c3da45) [ ![Download](https://api.bintray.com/packages/uphyca/maven/creditcardedittext/images/download.svg) ](https://bintray.com/uphyca/maven/creditcardedittext/)
 クレジットカード番号入力用の EditText
 
 ## Set-up
