@@ -1,7 +1,22 @@
+/*
+ * Copyright 2016 uPhyca, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.uphyca.creditcardedittext;
 
 import android.content.Context;
-import androidx.appcompat.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -11,17 +26,20 @@ import android.text.TextWatcher;
 import android.text.method.NumberKeyListener;
 import android.util.AttributeSet;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatEditText;
+
 import java.util.ArrayList;
 
 /**
- * クレジットカード番号入力用の EditText。
- * カード会社ごとの書式に従ってフォーマットした番号を表示する。
- *
- * 入力されているカード番号に対応するカード会社を取得するには {@link #getBrand()}を使う。
- *
- * カード番号の変更を検知する場合は{@link CreditCardNumberListener}を使う。
- *
- * 入力文字列の監視に{@link #addTextChangedListener}で登録した{@link TextWatcher}を使う場合、ユーザー入力による呼び出しの後にカード番号のフォーマットによる変更でもう一度呼び出されることがある点に留意すること。
+ * EditText for number of credit card.
+ * <p>
+ * Show formatted number according to the formats of issuing networks.
+ * {@link #getBrand()} returns the issuing network related to card number.
+ * Use {@link CreditCardNumberListener} to receive the change of card number.
+ * <p>
+ * If you register your own {@link TextWatcher} by {@link #addTextChangedListener}, you will
+ * receive the change twice for user input and formatting.
  */
 public class CreditCardNumberEditText extends AppCompatEditText {
 
@@ -52,9 +70,7 @@ public class CreditCardNumberEditText extends AppCompatEditText {
     }
 
     /**
-     * クレジットカード番号の変更を受け取るためのリスナーを登録する
-     *
-     * @param listener リスナー
+     * Register a listener to receive the change of number
      */
     public void addNumberListener(CreditCardNumberListener listener) {
         if (listeners == null) {
@@ -64,9 +80,7 @@ public class CreditCardNumberEditText extends AppCompatEditText {
     }
 
     /**
-     * 登録されたリスナーを解除する。指定されたリスナーが登録されていない場合は何もしない。
-     *
-     * @param listener リスナー
+     * Unregister listener that registered by {@link #addNumberListener}
      */
     public void removeNumberListener(CreditCardNumberListener listener) {
         if (listeners != null) {
@@ -76,7 +90,6 @@ public class CreditCardNumberEditText extends AppCompatEditText {
             }
         }
     }
-
 
     private final TextWatcher textWatcher = new TextWatcher() {
 
@@ -263,17 +276,17 @@ public class CreditCardNumberEditText extends AppCompatEditText {
     private static class CreditCardNumberKeyListener extends NumberKeyListener {
         private final char[] accepted = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', SEPARATOR};
 
+        @NonNull
         @Override
         protected char[] getAcceptedChars() {
             return accepted;
         }
 
         @Override
-        public CharSequence filter(CharSequence source, int start, int end,
-                                   Spanned dest, int dstart, int dend) {
+        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
 
             // 入力文字（数字かどうか）をチェック
-            CharSequence out = super.filter(source, start, end, dest, dstart, dend);
+            final CharSequence out = super.filter(source, start, end, dest, dstart, dend);
 
             if (TextUtils.equals(out, EMPTY)) {
                 return EMPTY;
@@ -286,12 +299,14 @@ public class CreditCardNumberEditText extends AppCompatEditText {
             }
 
             //destにsourceをマージした文字列
-            String tempRawText = new StringBuilder(dest).replace(dstart, dend, source.subSequence(start, end).toString()).toString();
-            String tempCardNumber = removeSeparators(tempRawText);
-            CreditCardBrand tempBrand = CreditCardBrand.getBrand(tempCardNumber);
+            final String tempRawText = new StringBuilder(dest)
+                    .replace(dstart, dend, source.subSequence(start, end).toString())
+                    .toString();
+            final String tempCardNumber = removeSeparators(tempRawText);
+            final CreditCardBrand tempBrand = CreditCardBrand.getBrand(tempCardNumber);
 
             //ブランドごとの書式のセパレーター位置以外に入力されたセパレーターを除去する
-            StringBuilder sourceBuf = new StringBuilder(source.subSequence(start, end));
+            final StringBuilder sourceBuf = new StringBuilder(source.subSequence(start, end));
             for (int i = end - 1; i >= start; --i) {
                 if (sourceBuf.charAt(i) == SEPARATOR) {
                     int index = i + dstart;
@@ -307,14 +322,13 @@ public class CreditCardNumberEditText extends AppCompatEditText {
             }
 
             // 入力文字数をチェック
-            int maxLength = tempBrand.getMaxLength() + tempBrand.getSeparatorCount();
-            CharSequence lengthOut = lengthFilter(maxLength, source, start, end, dest, dstart, dend);
+            final int maxLength = tempBrand.getMaxLength() + tempBrand.getSeparatorCount();
+            final CharSequence lengthOut = lengthFilter(maxLength, source, start, end, dest, dstart, dend);
             return lengthOut == null ? source : lengthOut;
         }
 
         // Taken from android.text.InputFilter.LengthFilter
-        private static CharSequence lengthFilter(int maxLength, CharSequence source, int start, int end,
-                                                 Spanned dest, int dstart, int dend) {
+        private static CharSequence lengthFilter(int maxLength, CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
             int keep = maxLength - (dest.length() - (dend - dstart));
             if (keep <= 0) {
                 return EMPTY;
@@ -339,21 +353,20 @@ public class CreditCardNumberEditText extends AppCompatEditText {
     }
 
     /**
-     * カード番号からカード会社を返却する
-     *
-     * @return カード会社
+     * Return the brand of credit card.
      */
+    @NonNull
     public CreditCardBrand getBrand() {
         return CreditCardBrand.getBrand(getNumber());
     }
 
     /**
-     * 入力されたカード番号を返却する
-     *
-     * @return 入力されたカード番号
+     * Return the number of credit card (separator not included).
      */
+    @NonNull
     public String getNumber() {
-        return removeSeparators(getText().toString());
+        final Editable text = getText();
+        return removeSeparators(text == null ? "" : text.toString());
     }
 
     /**
@@ -362,6 +375,7 @@ public class CreditCardNumberEditText extends AppCompatEditText {
      * @param s 文字列
      * @return セパレーター除去後の文字列
      */
+    @NonNull
     private static String removeSeparators(String s) {
         return s.replace(String.valueOf(SEPARATOR), EMPTY);
     }
@@ -423,6 +437,6 @@ public class CreditCardNumberEditText extends AppCompatEditText {
      * @return 文字が同じ場合はtrue、それ以外はfalse
      */
     private static boolean equalsChatAt(CharSequence s, int index, char c) {
-        return index < s.length() ? s.charAt(index) == c : false;
+        return index < s.length() && s.charAt(index) == c;
     }
 }

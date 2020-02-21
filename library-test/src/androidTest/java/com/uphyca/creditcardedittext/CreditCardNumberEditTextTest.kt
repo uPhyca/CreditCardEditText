@@ -7,6 +7,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.never
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 
@@ -113,6 +114,19 @@ class CreditCardNumberEditTextTest {
         underTest.addNumberListener(mockCreditCardNumberListener)
         underTest.setText("4")
         verify(mockCreditCardNumberListener, times(1))
+            .onChanged("4", CreditCardBrand.VISA)
+        underTest.removeNumberListener(mockCreditCardNumberListener)
+    }
+
+    /**
+     * リスナーが削除された場合、変更は通知されない
+     */
+    @Test
+    fun notSendNumberChangedAfterRemoveListener() {
+        underTest.addNumberListener(mockCreditCardNumberListener)
+        underTest.removeNumberListener(mockCreditCardNumberListener)
+        underTest.setText("4")
+        verify(mockCreditCardNumberListener, never())
             .onChanged("4", CreditCardBrand.VISA)
     }
 

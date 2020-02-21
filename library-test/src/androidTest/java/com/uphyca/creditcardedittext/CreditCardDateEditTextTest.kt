@@ -7,6 +7,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.never
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 
@@ -157,6 +158,18 @@ class CreditCardDateEditTextTest {
         underTest.addDateListener(mockCreditCardDateListener)
         underTest.setText("0")
         verify(mockCreditCardDateListener, times(1))
+            .onChanged(CreditCardDate("0", ""))
+    }
+
+    /**
+     * リスナーが削除された場合、変更は通知されない
+     */
+    @Test
+    fun notSendDateChangedAfterRemoveListener() {
+        underTest.addDateListener(mockCreditCardDateListener)
+        underTest.removeDateListener(mockCreditCardDateListener)
+        underTest.setText("0")
+        verify(mockCreditCardDateListener, never())
             .onChanged(CreditCardDate("0", ""))
     }
 
