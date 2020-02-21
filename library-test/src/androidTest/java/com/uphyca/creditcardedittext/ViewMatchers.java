@@ -1,8 +1,9 @@
 package com.uphyca.creditcardedittext;
 
-import androidx.test.espresso.matcher.BoundedMatcher;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.test.espresso.matcher.BoundedMatcher;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;

@@ -15,36 +15,17 @@ android {
     compileSdkVersion 28
 
     defaultConfig {
-        minSdkVersion 14
+        minSdkVersion 7
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-
-
-    packagingOptions {
-
-        // assertj-core, mockito-core
-        exclude "asm-license.txt"
-    }
 }
 
 dependencies {
     compileOnly "androidx.appcompat:appcompat:1.1.0"
-
-    androidTestImplementation "androidx.annotation:annotation:1.1.0"
-    androidTestImplementation "androidx.test.ext:junit:1.1.1"
-
-    // @aarを指定せずとも問題無いはずだが、なぜかエラーが出るので @aar をつけて回避しておく。
-    // Error:Module "com.squareup.assertj:assertj-android-appcompat-v7:1.1.1" depends on one or more Android Libraries but is a jar
-    // 関連しそうなAssertj-androidのissue  https://github.com/square/assertj-android/issues/180
-    androidTestImplementation ("com.squareup.assertj:assertj-android:1.1.1@aar") {
-        transitive = true
-    }
-    androidTestImplementation "org.mockito:mockito-core:1.9.5"
-    androidTestImplementation "com.google.dexmaker:dexmaker-mockito:1.2"
 }
 
 //./gradlew clean build bintrayUpload -PbintrayUser=BINTRAY_USERNAME -PbintrayKey=BINTRAY_KEY -PdryRun=false

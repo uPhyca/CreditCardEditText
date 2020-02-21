@@ -1,42 +1,46 @@
 apply plugin: "com.android.application"
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
         applicationId "com.uphyca.creditcardedittext.library_test"
         minSdkVersion 18
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
-    implementation fileTree(dir: "libs", include: ["*.jar"])
-    testImplementation "junit:junit:4.12"
     implementation "androidx.appcompat:appcompat:1.1.0"
     implementation project(":library")
 
-    androidTestImplementation "androidx.annotation:annotation:1.1.0"
-    androidTestImplementation "androidx.test.ext:junit:1.1.1"
+    testImplementation "junit:junit:4.12"
 
-    // @aarを指定せずとも問題無いはずだが、なぜかエラーが出るので @aar をつけて回避しておく。
-    // Error:Module "com.squareup.assertj:assertj-android-appcompat-v7:1.1.1" depends on one or more Android Libraries but is a jar
-    // 関連しそうなAssertj-androidのissue  https://github.com/square/assertj-android/issues/180
-    //androidTestImplementation "com.squareup.assertj:assertj-android:1.1.1@aar"
-    androidTestImplementation "com.squareup.assertj:assertj-android:1.1.1"
-    // @aarを明示するとdependenciesが解決されないので明示する
-    //androidTestImplementation "org.assertj:assertj-core:1.7.1"
-
+    androidTestImplementation "com.google.truth:truth:1.0"
+    androidTestImplementation "org.mockito:mockito-core:3.0.0"
+    androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito:2.25.1"
+    androidTestImplementation "androidx.test:runner:1.2.0"
+    androidTestImplementation "androidx.test:rules:1.2.0"
+    androidTestImplementation "androidx.test.ext:junit-ktx:1.1.1"
+    androidTestImplementation "androidx.test.ext:truth:1.2.0"
     androidTestImplementation "androidx.test.espresso:espresso-core:3.2.0"
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:3.2.0"
+    androidTestImplementation "androidx.test.espresso:espresso-intents:3.2.0"
     androidTestImplementation "androidx.test.uiautomator:uiautomator:2.2.0"
 }
