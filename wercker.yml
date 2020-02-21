@@ -1,7 +1,7 @@
-box: uphyca/android
+box: circleci/android:api-29
 build:
   steps:
     - script:
         name: build
         code: |
-          gradle --full-stacktrace --project-cache-dir=$WERCKER_CACHE_DIR clean build
+          ./gradlew --full-stacktrace --project-cache-dir=$WERCKER_CACHE_DIR clean build
