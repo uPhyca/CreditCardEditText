@@ -24,7 +24,6 @@ class CreditCardNumberEditTextTest {
     fun setUp() {
         mockCreditCardNumberListener = mock(CreditCardNumberListener::class.java)
         underTest = CreditCardNumberEditText(ApplicationProvider.getApplicationContext())
-        underTest.onFinishInflate()
     }
 
     @Test
