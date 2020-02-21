@@ -90,6 +90,8 @@ public class CreditCardDateEditText extends AppCompatEditText {
 
     /**
      * Register a listener to receive the change of expiration date
+     *
+     * @param listener added listener
      */
     public void addDateListener(CreditCardDateListener listener) {
         if (listeners == null) {
@@ -100,6 +102,8 @@ public class CreditCardDateEditText extends AppCompatEditText {
 
     /**
      * Unregister listener that registered by {@link #addDateListener}
+     *
+     * @param listener removed listener
      */
     public void removeDateListener(CreditCardDateListener listener) {
         if (listeners != null) {
@@ -299,6 +303,8 @@ public class CreditCardDateEditText extends AppCompatEditText {
 
     /**
      * Return expiration date of credit card.
+     *
+     * @return expiration date of credit card
      */
     @NonNull
     public CreditCardDate getDate() {
