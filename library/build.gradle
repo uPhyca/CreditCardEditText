@@ -33,7 +33,7 @@ publish {
     userOrg = "uphyca"
     groupId = "com.uphyca"
     artifactId = "creditcardedittext"
-    publishVersion = "1.2"
+    publishVersion = "1.3"
     desc = "Implementation of EditText for Credit Card."
     website = "https://github.com/uPhyca/CreditCardEditText"
     issueTracker = "https://github.com/uPhyca/CreditCardEditText/issues"
