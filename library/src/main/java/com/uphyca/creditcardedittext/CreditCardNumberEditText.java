@@ -49,21 +49,33 @@ public class CreditCardNumberEditText extends AppCompatEditText {
 
     public CreditCardNumberEditText(Context context) {
         super(context);
+        init();
     }
 
     public CreditCardNumberEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init();
     }
 
     public CreditCardNumberEditText(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        init();
     }
 
     @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-        setRawInputType(InputType.TYPE_CLASS_NUMBER);
-        InputFilter[] filters = {new CreditCardNumberKeyListener()};
+    public final void setInputType(int type) {
+        super.setInputType(InputType.TYPE_NULL);
+    }
+
+    @Override
+    public final void setRawInputType(int type) {
+        super.setRawInputType(InputType.TYPE_CLASS_NUMBER);
+    }
+
+    private void init() {
+        super.setInputType(InputType.TYPE_NULL);
+        super.setRawInputType(InputType.TYPE_CLASS_NUMBER);
+        final InputFilter[] filters = {new CreditCardNumberKeyListener()};
         setFilters(filters);
 
         addTextChangedListener(textWatcher);

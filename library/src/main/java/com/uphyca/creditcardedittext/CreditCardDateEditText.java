@@ -56,21 +56,33 @@ public class CreditCardDateEditText extends AppCompatEditText {
 
     public CreditCardDateEditText(Context context) {
         super(context);
+        init();
     }
 
     public CreditCardDateEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init();
     }
 
     public CreditCardDateEditText(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        init();
     }
 
     @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-        setRawInputType(InputType.TYPE_CLASS_NUMBER);
-        InputFilter[] filters = {new CreditCardDateKeyListener()};
+    public final void setInputType(int type) {
+        super.setInputType(InputType.TYPE_NULL);
+    }
+
+    @Override
+    public final void setRawInputType(int type) {
+        super.setRawInputType(InputType.TYPE_CLASS_NUMBER);
+    }
+
+    private void init() {
+        super.setInputType(InputType.TYPE_NULL);
+        super.setRawInputType(InputType.TYPE_CLASS_NUMBER);
+        final InputFilter[] filters = {new CreditCardDateKeyListener()};
         setFilters(filters);
 
         addTextChangedListener(textWatcher);
