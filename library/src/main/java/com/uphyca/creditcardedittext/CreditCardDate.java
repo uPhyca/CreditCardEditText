@@ -1,26 +1,46 @@
+/*
+ * Copyright 2016 uPhyca, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.uphyca.creditcardedittext;
 
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+
 import java.util.Locale;
 
 /**
- * クレジットカードの有効期限を表す
+ * expiration date of credit card
  */
-public class CreditCardDate {
+public final class CreditCardDate {
 
     private final String month;
     private final String year;
 
-    public CreditCardDate(String month, String year) {
+    public CreditCardDate(@NonNull String month, @NonNull String year) {
         this.month = month;
         this.year = year;
     }
 
+    @NonNull
     public String getMonth() {
         return month;
     }
 
+    @NonNull
     public String getYear() {
         return year;
     }
@@ -32,15 +52,14 @@ public class CreditCardDate {
 
         CreditCardDate that = (CreditCardDate) o;
 
-        if (month != null ? !month.equals(that.month) : that.month != null) return false;
-        return year != null ? year.equals(that.year) : that.year == null;
-
+        if (!month.equals(that.month)) return false;
+        return year.equals(that.year);
     }
 
     @Override
     public int hashCode() {
-        int result = month != null ? month.hashCode() : 0;
-        result = 31 * result + (year != null ? year.hashCode() : 0);
+        int result = month.hashCode();
+        result = 31 * result + year.hashCode();
         return result;
     }
 

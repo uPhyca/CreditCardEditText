@@ -1,7 +1,22 @@
+/*
+ * Copyright 2016 uPhyca, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.uphyca.creditcardedittext;
 
 import android.content.Context;
-import androidx.appcompat.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -11,19 +26,22 @@ import android.text.TextWatcher;
 import android.text.method.NumberKeyListener;
 import android.util.AttributeSet;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatEditText;
+
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * クレジットカード有効期限入力用の EditText。
- * MM/yyの書式に従ってフォーマットした有効期限を表示する。
- *
- * 入力されている有効期限を取得するには {@link #getDate()}を使う。
- *
- * 有効期限の変更を検知する場合は{@link CreditCardDateListener}を使う。
- *
- * 入力文字列の監視に{@link #addTextChangedListener}で登録した{@link TextWatcher}を使う場合、ユーザー入力による呼び出しの後に有効期限のフォーマットによる変更でもう一度呼び出されることがある点に留意すること。
+ * EditText for expiration date of credit card.
+ * <p>
+ * Show formatted date according to MM/yy format.
+ * {@link #getDate()} returns the expiration date.
+ * Use {@link CreditCardDateListener} to receive the change of expiration date.
+ * <p>
+ * If you register your own {@link TextWatcher} by {@link #addTextChangedListener}, you will
+ * receive the change twice for user input and formatting.
  */
 public class CreditCardDateEditText extends AppCompatEditText {
 
@@ -59,9 +77,7 @@ public class CreditCardDateEditText extends AppCompatEditText {
     }
 
     /**
-     * クレジットカード番号の変更を受け取るためのリスナーを登録する
-     *
-     * @param listener リスナー
+     * Register a listener to receive the change of expiration date
      */
     public void addDateListener(CreditCardDateListener listener) {
         if (listeners == null) {
@@ -71,9 +87,7 @@ public class CreditCardDateEditText extends AppCompatEditText {
     }
 
     /**
-     * 登録されたリスナーを解除する。指定されたリスナーが登録されていない場合は何もしない。
-     *
-     * @param listener リスナー
+     * Unregister listener that registered by {@link #addDateListener}
      */
     public void removeDateListener(CreditCardDateListener listener) {
         if (listeners != null) {
@@ -83,7 +97,6 @@ public class CreditCardDateEditText extends AppCompatEditText {
             }
         }
     }
-
 
     private final TextWatcher textWatcher = new TextWatcher() {
 
@@ -149,7 +162,7 @@ public class CreditCardDateEditText extends AppCompatEditText {
             }
         }
 
-        private void sendDateChanged(CreditCardDate date) {
+        private void sendDateChanged(@NonNull CreditCardDate date) {
             if (listeners != null) {
                 final ArrayList<CreditCardDateListener> list = listeners;
                 final int count = list.size();
@@ -161,19 +174,23 @@ public class CreditCardDateEditText extends AppCompatEditText {
     };
 
     private static class CreditCardDateKeyListener extends NumberKeyListener {
+
+        private final Pattern monthStartPattern = Pattern.compile("^[0-1].*");
+        private final Pattern monthPattern = Pattern.compile("^(0[1-9]|1[0-2]).*");
+
         private final char[] accepted = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', SEPARATOR};
 
+        @NonNull
         @Override
         protected char[] getAcceptedChars() {
             return accepted;
         }
 
         @Override
-        public CharSequence filter(CharSequence source, int start, int end,
-                                   Spanned dest, int dstart, int dend) {
+        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
 
             // 入力文字（数字かどうか）をチェック
-            CharSequence out = super.filter(source, start, end, dest, dstart, dend);
+            final CharSequence out = super.filter(source, start, end, dest, dstart, dend);
 
             if (TextUtils.equals(out, EMPTY)) {
                 return EMPTY;
@@ -186,7 +203,9 @@ public class CreditCardDateEditText extends AppCompatEditText {
             }
 
             //destにsourceをマージした文字列
-            String tempRawText = new StringBuilder(dest).replace(dstart, dend, source.subSequence(start, end).toString()).toString();
+            final String tempRawText = new StringBuilder(dest)
+                    .replace(dstart, dend, source.subSequence(start, end).toString())
+                    .toString();
 
             //書式のセパレーター位置以外に入力されたセパレーターを除去する
             StringBuilder sourceBuf = new StringBuilder(source.subSequence(start, end));
@@ -206,8 +225,7 @@ public class CreditCardDateEditText extends AppCompatEditText {
 
             //有効期限の月が0から1で始まっていない場合は除去する
             if (tempRawText.length() >= 1) {
-                Pattern pattern = Pattern.compile("^[0-1].*");
-                Matcher matcher = pattern.matcher(tempRawText);
+                final Matcher matcher = monthStartPattern.matcher(tempRawText);
                 if (!matcher.matches()) {
                     return EMPTY;
                 }
@@ -215,8 +233,7 @@ public class CreditCardDateEditText extends AppCompatEditText {
 
             //有効期限の月が01〜12ではない場合は、二文字目以降を除去する
             if (tempRawText.length() >= 2) {
-                Pattern pattern = Pattern.compile("^(0[1-9]|1[0-2]).*");
-                Matcher matcher = pattern.matcher(tempRawText);
+                final Matcher matcher = monthPattern.matcher(tempRawText);
                 if (!matcher.matches()) {
                     sourceBuf = new StringBuilder(source.subSequence(start, end));
                     for (int i = end - 1; i >= start; --i) {
@@ -234,8 +251,8 @@ public class CreditCardDateEditText extends AppCompatEditText {
             }
 
             // 入力文字数をチェック
-            int maxLength = MAX_LENGTH + SEPARATOR_COUNT;
-            CharSequence lengthOut = lengthFilter(maxLength, source, start, end, dest, dstart, dend);
+            final int maxLength = MAX_LENGTH + SEPARATOR_COUNT;
+            final CharSequence lengthOut = lengthFilter(maxLength, source, start, end, dest, dstart, dend);
             return lengthOut == null ? source : lengthOut;
         }
 
@@ -244,8 +261,7 @@ public class CreditCardDateEditText extends AppCompatEditText {
         }
 
         // Taken from android.text.InputFilter.LengthFilter
-        private static CharSequence lengthFilter(int maxLength, CharSequence source, int start, int end,
-                                                 Spanned dest, int dstart, int dend) {
+        private static CharSequence lengthFilter(int maxLength, CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
             int keep = maxLength - (dest.length() - (dend - dstart));
             if (keep <= 0) {
                 return EMPTY;
@@ -270,12 +286,12 @@ public class CreditCardDateEditText extends AppCompatEditText {
     }
 
     /**
-     * 入力された有効期限を返却する
-     *
-     * @return 入力された有効期限
+     * Return expiration date of credit card.
      */
+    @NonNull
     public CreditCardDate getDate() {
-        return parseDate(getText().toString());
+        final Editable text = getText();
+        return parseDate(text == null ? "" : text.toString());
     }
 
     /**
@@ -284,6 +300,7 @@ public class CreditCardDateEditText extends AppCompatEditText {
      * @param s 文字列
      * @return セパレーター除去後の文字列
      */
+    @NonNull
     private static String removeSeparators(String s) {
         return s.replace(String.valueOf(SEPARATOR), EMPTY);
     }
@@ -343,9 +360,10 @@ public class CreditCardDateEditText extends AppCompatEditText {
      * @return 文字が同じ場合はtrue、それ以外はfalse
      */
     private static boolean equalsChatAt(CharSequence s, int index, char c) {
-        return index < s.length() ? s.charAt(index) == c : false;
+        return index < s.length() && s.charAt(index) == c;
     }
 
+    @NonNull
     private static String safeSubstring(String s, int start, int end) {
         if (s == null) {
             return EMPTY;
@@ -359,6 +377,7 @@ public class CreditCardDateEditText extends AppCompatEditText {
         return s.substring(start, end);
     }
 
+    @NonNull
     private static CreditCardDate parseDate(String s) {
         String date = removeSeparators(s);
         String month = safeSubstring(date, 0, 2);
