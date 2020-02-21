@@ -24,7 +24,6 @@ class CreditCardDateEditTextTest {
     fun setUp() {
         mockCreditCardDateListener = mock(CreditCardDateListener::class.java)
         underTest = CreditCardDateEditText(ApplicationProvider.getApplicationContext())
-        underTest.onFinishInflate()
     }
 
     @Test
