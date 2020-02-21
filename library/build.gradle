@@ -4,64 +4,38 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.novoda:bintray-release:0.3.4'
+        classpath "com.novoda:bintray-release:0.8.0"
     }
 }
 
-apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
+apply plugin: "com.android.library"
+apply plugin: "com.novoda.bintray-release"
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdkVersion 28
 
     defaultConfig {
         minSdkVersion 7
-        targetSdkVersion 23
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-    }
-
-
-    packagingOptions {
-
-        // assertj-core, mockito-core
-        exclude 'asm-license.txt'
-    }
-}
-
-configurations.all {
-    resolutionStrategy {
-        force 'com.android.support:support-annotations:23.1.1'
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:23.1.1'
-
-    androidTestCompile 'com.android.support:support-annotations:23.1.1'
-    androidTestCompile 'com.android.support.test:runner:0.5'
-
-    // @aarを指定せずとも問題無いはずだが、なぜかエラーが出るので @aar をつけて回避しておく。
-    // Error:Module 'com.squareup.assertj:assertj-android-appcompat-v7:1.1.1' depends on one or more Android Libraries but is a jar
-    // 関連しそうなAssertj-androidのissue  https://github.com/square/assertj-android/issues/180
-    androidTestCompile ('com.squareup.assertj:assertj-android:1.1.1@aar') {
-        transitive = true
-    }
-    androidTestCompile 'org.mockito:mockito-core:1.9.5'
-    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
+    compileOnly "androidx.appcompat:appcompat:1.1.0"
 }
 
 //./gradlew clean build bintrayUpload -PbintrayUser=BINTRAY_USERNAME -PbintrayKey=BINTRAY_KEY -PdryRun=false
 publish {
-    userOrg = 'uphyca'
-    groupId = 'com.uphyca'
-    artifactId = 'creditcardedittext'
-    version = '1.2'
-    description = 'Implementation of EditText for Credit Card.'
-    website = 'https://github.com/uPhyca/CreditCardEditText'
-    issueTracker = 'https://github.com/uPhyca/CreditCardEditText/issues'
-    repository = 'https://github.com/uPhyca/CreditCardEditText.git'
+    userOrg = "uphyca"
+    groupId = "com.uphyca"
+    artifactId = "creditcardedittext"
+    version = "1.2"
+    description = "Implementation of EditText for Credit Card."
+    website = "https://github.com/uPhyca/CreditCardEditText"
+    issueTracker = "https://github.com/uPhyca/CreditCardEditText/issues"
+    repository = "https://github.com/uPhyca/CreditCardEditText.git"
 }
