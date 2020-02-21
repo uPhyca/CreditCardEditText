@@ -83,6 +83,8 @@ public class CreditCardNumberEditText extends AppCompatEditText {
 
     /**
      * Register a listener to receive the change of number
+     *
+     * @param listener added listener
      */
     public void addNumberListener(CreditCardNumberListener listener) {
         if (listeners == null) {
@@ -93,6 +95,8 @@ public class CreditCardNumberEditText extends AppCompatEditText {
 
     /**
      * Unregister listener that registered by {@link #addNumberListener}
+     *
+     * @param listener removed listener
      */
     public void removeNumberListener(CreditCardNumberListener listener) {
         if (listeners != null) {
@@ -366,6 +370,8 @@ public class CreditCardNumberEditText extends AppCompatEditText {
 
     /**
      * Return the brand of credit card.
+     *
+     * @return the brand of credit card
      */
     @NonNull
     public CreditCardBrand getBrand() {
@@ -374,6 +380,8 @@ public class CreditCardNumberEditText extends AppCompatEditText {
 
     /**
      * Return the number of credit card (separator not included).
+     *
+     * @return the number of credit card
      */
     @NonNull
     public String getNumber() {

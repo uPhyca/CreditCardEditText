@@ -4,11 +4,12 @@
     package="com.uphyca.creditcardedittext.library_test">
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
         <activity android:name="com.uphyca.creditcardedittext.CreditCardNumberActivity" />
         <activity android:name="com.uphyca.creditcardedittext.CreditCardDateActivity" />
     </application>
