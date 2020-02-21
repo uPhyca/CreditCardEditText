@@ -34,7 +34,8 @@ public enum CreditCardBrand {
     MASTER_CARD(16, 16, "^5[1-5].*", new int[]{4, 4, 4, 4}),
     AMERICAN_EXPRESS(15, 15, "^3[47].*", new int[]{4, 6, 5}),
     JCB(16, 16, "^35.*", new int[]{4, 4, 4, 4}),
-    DINERS_CLUB(14, 14, "^3[0689].*", new int[]{4, 6, 4});
+    DINERS_CLUB(14, 14, "^3[0689].*", new int[]{4, 6, 4}),
+    DISCOVER(16, 16, "^60.*", new int[]{4, 4, 4, 4});
 
     private final int minLength;
     private final int maxLength;
